@@ -1,0 +1,120 @@
+#directory
+getwd()
+setwd("C:/r prog")
+getwd()
+
+#packages
+install.packages(c("tidyverse", "ggplot2", "corrplot", "RColorBrewer","dplyr"))
+
+# Load the dataset
+df <- read.csv("C:/r prog/activity/ds presentation.csv")
+
+# Get the basic information about the dataset
+summary(df)
+head(df)
+tail(df)
+str(df)
+nrow(df)
+ncol(df)
+colnames(df)
+sapply(df, class)
+
+# Check for missing values
+
+# Calculate total missing values in the dataset
+total_missing <- sum(is.na(df))
+# Display the total missing values
+print(total_missing)
+# Check if there are any missing values in the dataset
+any_missing <- anyNA(df)
+# Display the result
+print(any_missing)
+
+#check for outliers
+# Corrected column names and created a subset of the data frame
+df1 <- df[c("Year", "Schizophrenia", "Bipolar.disorder", "Eating.disorders", "Anxiety.disorders", "Drug.use.disorders", "Depressive.disorders", "Alcohol.use.disorders")]
+# Create a boxplot for the subset
+boxplot(df1, outline = TRUE)
+#hist plot to check distribution
+par(mfrow=c(2, 4))
+for (i in 1:length(df1)) {
+  hist(df1[, i], main=colnames(df)[i], xlab="Value")
+}
+print(13+12)
+
+library(ggplot2)
+library(dplyr)
+#plot 1
+df_Schizophrenia = df %>%
+  group_by(Year) %>%
+  summarise(total_Schizophrenia = sum(Schizophrenia))
+
+ggplot(df_Schizophrenia, aes(x = Year, y = total_Schizophrenia)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(x = "Year", y = "Total Schizophrenia Patients", title = "Total Schizophrenia Patients Diagnosed Each Year")
+
+#plot 2
+library(ggplot2)
+library(dplyr)
+
+df_pie = df %>%
+  summarise(total_Schizophrenia = sum(Schizophrenia),
+            total_bipolar = sum(Bipolar.disorder),
+            total_eating = sum(Eating.disorders),
+            total_anxiety = sum(Anxiety.disorders),
+            total_drug_use = sum(Drug.use.disorders),
+            total_depressive = sum(Depressive.disorders),
+            total_alcohol_use = sum(Alcohol.use.disorders))
+
+df_pie <- tidyr::gather(df_pie, key = "Disorder", value = "Count", -total_Schizophrenia)
+
+ggplot(df_pie, aes(x = "", y = Count, fill = Disorder)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Distribution of Schizophrenia Patients by Co-occurring Disorder") +
+  theme_void() +
+  theme(legend.position = "right")
+#plots for the continent india
+india <-subset(df,Entity=="India")
+india%>%
+  ggplot(aes(Year,Depressive.disorders))+
+  geom_point(aes(color = Depressive.disorders,
+                 alpha =0.5))
+india%>%
+  ggplot(aes(Year,Schizophrenia))+
+  geom_point(aes(color = Schizophrenia,
+                 alpha =0.5))
+india%>%
+  ggplot(aes(Year,Bipolar.disorder))+
+  geom_point(aes(color = Bipolar.disorder,
+                 alpha =0.5))
+india%>%
+  ggplot(aes(Year,Eating.disorders))+
+  geom_point(aes(color = Eating.disorders,
+                 alpha =0.5))
+india%>%
+  ggplot(aes(Year,Anxiety.disorders))+
+  geom_point(aes(color = Anxiety.disorders,
+                 alpha =0.5))
+india%>%
+  ggplot(aes(Year,Drug.use.disorders))+
+  geom_point(aes(color = Drug.use.disorders,
+                 alpha =0.5))
+
+#plot 4
+library(ggplot2)
+library(dplyr)
+
+countries = c("Afganistan", "India", "Brazil")
+
+df_countries <- df %>%
+  filter(Entity %in% countries) %>%
+  select(Entity, Schizophrenia, Bipolar.disorder, Eating.disorders, Anxiety.disorders, Drug.use.disorders, Depressive.disorders, Alcohol.use.disorders) %>%
+  pivot_longer(cols = -Entity, names_to = "Disorder", values_to = "Count")
+
+ggplot(df_countries, aes(x = Entity, y = Count, fill = Disorder)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Country", y = "Number of Patients", fill = "Disorder", title = "Distribution of Disorders for 3 Countries") +
+  theme(legend.position = "right")
+
+
