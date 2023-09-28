@@ -1,7 +1,3 @@
-#directory
-getwd()
-setwd("C:/r prog")
-getwd()
 
 #packages
 install.packages(c("tidyverse", "ggplot2", "corrplot", "RColorBrewer","dplyr"))
